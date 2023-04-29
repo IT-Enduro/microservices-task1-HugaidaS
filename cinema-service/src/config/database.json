@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "program",
+    "password": "test",
+    "database": "cinema",
+    "host": "host.docker.internal",
+    "dialect": "postgres"
+  }
+}
