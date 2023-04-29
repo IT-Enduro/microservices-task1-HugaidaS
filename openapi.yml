@@ -8,7 +8,8 @@ servers:
   - url: http://localhost:8070
     description: Films Service
   - url: http://localhost:8060
-    description: Cinema Service
+    description: Ciname Service
+
 paths:
   /api/v1/films:
     get:

@@ -1,7 +1,5 @@
 # Домашняя работа #1
 
-![Java CI with Maven](
-
 ![GitHub Classroom Workflow](../../workflows/GitHub%20Classroom%20Workflow/badge.svg?branch=master)
 
 ## Microservices
@@ -52,7 +50,6 @@ POST {{ticketUrl}}/api/v1/tickets/cinema/{{cinemaUid}}/films/{{filmUid}}
 Content-Type: application/json
 Accept: application/json
 X-User-Name: {{username}}
-
 {
    "date": "2024-01-01T08:00:00",
    "row": 10,
@@ -119,7 +116,6 @@ CREATE TABLE film
     producer VARCHAR(255),
     genre    VARCHAR(255)  NOT NULL
 );
-
 CREATE UNIQUE INDEX udx_film_uid ON film (film_uid);
 ```
 
@@ -133,9 +129,7 @@ CREATE TABLE cinema
     name       VARCHAR(255),
     address    VARCHAR(255)
 );
-
 CREATE UNIQUE INDEX udx_cinema_uid ON cinema (cinema_uid);
-
 CREATE TABLE film_session
 (
     id           SERIAL PRIMARY KEY,
@@ -148,7 +142,6 @@ CREATE TABLE film_session
     cinema_id    INT
         CONSTRAINT fk_film_session_cinema_id REFERENCES cinema (id)
 );
-
 CREATE UNIQUE INDEX udx_film_session_session_uid ON film_session (session_uid);
 ```
 
@@ -166,7 +159,6 @@ CREATE TABLE tickets
     status      VARCHAR(20) NOT NULL
         CHECK ( status IN ('BOOKED', 'CANCELED') )
 );
-
 CREATE UNIQUE INDEX udx_tickets_ticket_uid ON tickets (ticket_uid);
 ```
 
