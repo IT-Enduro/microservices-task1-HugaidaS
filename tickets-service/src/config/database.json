@@ -3,7 +3,7 @@
     "username": "program",
     "password": "test",
     "database": "tickets",
-    "host": "postgres",
+    "host": "postgres:5432",
     "dialect": "postgres"
   }
 }
