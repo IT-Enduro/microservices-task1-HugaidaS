@@ -1,35 +1,57 @@
-# PRODUCTION DOCKERFILE
-# ---------------------
-# This Dockerfile allows to build a Docker image of the NestJS application
-# and based on a NodeJS 16 image. The multi-stage mechanism allows to build
-# the application in a "builder" stage and then create a lightweight production
-# image containing the required dependencies and the JS build files.
-#
-# Dockerfile best practices
-# https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
-# Dockerized NodeJS best practices
-# https://github.com/nodejs/docker-node/blob/master/docs/BestPractices.md
-# https://www.bretfisher.com/node-docker-good-defaults/
-# http://goldbergyoni.com/checklist-best-practice-of-node-js-in-production/
+# This stage is used as a target in Lotic's global docker-compose at https://github.com/Lotic-ai/lotic-configs/blob/main/docker-compose.yml
+FROM node:18.13.0-alpine AS dev
+WORKDIR /app
 
-FROM node:16-alpine
+# add necessary packages for building
+RUN apk add --no-cache --upgrade alpine-sdk python3
 
-# Create app directory
-WORKDIR /usr/src/app
+# copy configuration files
+COPY \
+  .env* \
+  .eslintrc.js \
+  .prettierignore \
+  .prettierrc \
+  .sequelizerc \
+  nest-cli.json \
+  package.json \
+  tsconfig.build.json \
+  tsconfig.json \
+  tsconfig.scripts.json \
+  ./
 
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY package*.json ./
+# copy source code
+COPY src/ src/
+COPY test/ test/
 
-# Install app dependencies
+
+FROM dev AS build
+
+# install dependencies
 RUN npm install
-RUN npm install -g @nestjs/cli
+
 RUN npm run migrate
 
-# Bundle app source
-COPY . .
-
-# Creates a "dist" folder with the production build
+# build from source
 RUN npm run build
 
-# Start the server using the production build
-CMD [ "node", "dist/main.js" ]
+# copy migrations
+COPY src/modules/database/migrations/ /app/dist/modules/database/migrations/
+
+# prune dev dependencies, keep production dependencies
+RUN npm prune --production
+
+
+FROM node:18.13.0-alpine AS prod
+WORKDIR /app
+
+# copy production-relevant configuration files
+COPY package.json ./
+
+# copy all dependencies
+COPY --from=build /app/node_modules/ node_modules/
+
+# copy compiled source
+COPY --from=build /app/dist dist/
+
+# CMD should prefer to call node directly, not through a yarn script
+CMD ["node", "dist/main.js"]
