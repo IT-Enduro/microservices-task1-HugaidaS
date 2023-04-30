@@ -3,7 +3,7 @@
     "username": "program",
     "password": "test",
     "database": "cinema",
-    "host": "host.docker.internal",
+    "host": "localhost",
     "dialect": "postgres"
   }
 }
