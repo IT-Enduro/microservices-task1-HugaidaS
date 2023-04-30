@@ -9,14 +9,12 @@ RUN apk add --no-cache --upgrade alpine-sdk python3
 COPY \
   .env* \
   .eslintrc.js \
-  .prettierignore \
   .prettierrc \
   .sequelizerc \
   nest-cli.json \
   package.json \
   tsconfig.build.json \
   tsconfig.json \
-  tsconfig.scripts.json \
   ./
 
 # copy source code
