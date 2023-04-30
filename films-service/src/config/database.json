@@ -3,7 +3,7 @@
     "username": "program",
     "password": "test",
     "database": "films",
-    "host": "localhost",
+    "host": "postgres",
     "dialect": "postgres"
   }
 }
