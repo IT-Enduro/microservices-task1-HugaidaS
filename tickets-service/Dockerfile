@@ -19,7 +19,6 @@ COPY \
 
 # copy source code
 COPY src/ src/
-COPY test/ test/
 
 
 FROM dev AS build
