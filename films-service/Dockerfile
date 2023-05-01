@@ -1,5 +1,5 @@
 # This stage is used as a target in Lotic's global docker-compose at https://github.com/Lotic-ai/lotic-configs/blob/main/docker-compose.yml
-FROM node:16 AS dev
+FROM node:lts-alpine AS dev
 WORKDIR /app
 
 # copy configuration files
@@ -34,7 +34,7 @@ COPY src/config/ /app/dist/config/
 RUN npm prune --production
 
 
-FROM node:16 AS prod
+FROM node:lts-alpine AS prod
 WORKDIR /app
 
 # copy production-relevant configuration files
