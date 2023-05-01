@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Film } from '../../models/film.model';
 import { InjectModel } from '@nestjs/sequelize';
+import { Film } from '../../models/film.model';
 
 @Injectable()
 export class FilmsService {
