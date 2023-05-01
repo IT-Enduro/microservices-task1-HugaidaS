@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { InjectModel } from '@nestjs/sequelize';
+import { Ticket } from '../../models/ticket.model';
 import * as crypto from 'crypto';
-import { Ticket } from 'src/models/ticket.model';
 
 @Injectable()
 export class TicketsService {
