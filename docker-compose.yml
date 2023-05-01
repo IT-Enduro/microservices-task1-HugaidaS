@@ -19,6 +19,8 @@ services:
     container_name: tickets-service
     ports:
       - "8080:8080"
+    command: >
+      sh -c "sequelize-cli db:migrate && node dist/main.js"
     depends_on:
       - postgres
 
@@ -28,6 +30,8 @@ services:
     container_name: films-service
     ports:
       - "8070:8070"
+    command: >
+      sh -c "sequelize-cli db:migrate && node dist/main.js"
     depends_on:
       - postgres
 
@@ -37,6 +41,8 @@ services:
     container_name: cinema-service
     ports:
       - "8060:8060"
+    command: >
+      sh -c "sequelize-cli db:migrate && node dist/main.js"
     depends_on:
       - postgres
 

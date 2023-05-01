@@ -26,13 +26,12 @@ FROM dev AS build
 # install dependencies
 RUN npm install
 
-RUN npm run migrate
-
 # build from source
 RUN npm run build
 
 # copy migrations
 COPY src/modules/database/migrations/ /app/dist/modules/database/migrations/
+COPY src/config/ /app/dist/config/
 
 # prune dev dependencies, keep production dependencies
 RUN npm prune --production
@@ -50,5 +49,16 @@ COPY --from=build /app/node_modules/ node_modules/
 # copy compiled source
 COPY --from=build /app/dist dist/
 
-# CMD should prefer to call node directly, not through a yarn script
-CMD ["node", "dist/main.js"]
+COPY \
+  .env* \
+  .eslintrc.js \
+  .prettierrc \
+  .sequelizerc \
+  nest-cli.json \
+  package.json \
+  tsconfig.build.json \
+  tsconfig.json \
+  ./
+
+RUN npm install sequelize-cli -g
+
