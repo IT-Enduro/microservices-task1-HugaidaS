@@ -2,9 +2,6 @@
 FROM node:16 AS dev
 WORKDIR /app
 
-# add necessary packages for building
-RUN apk add --no-cache --upgrade alpine-sdk python3
-
 # copy configuration files
 COPY \
   .env* \
