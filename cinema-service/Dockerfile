@@ -20,7 +20,7 @@ COPY src/ src/
 FROM dev AS build
 
 # install dependencies
-RUN npm ci
+RUN npm install
 
 # build from source
 RUN npm run build
