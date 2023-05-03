@@ -1,60 +1,61 @@
-FROM node:lts-alpine AS dev
-WORKDIR /app
+###################
+# BUILD FOR LOCAL DEVELOPMENT
+###################
 
-# copy configuration files
-COPY \
-  .env* \
-  .eslintrc.js \
-  .prettierrc \
-  .sequelizerc \
-  nest-cli.json \
-  package.json \
-  tsconfig.build.json \
-  tsconfig.json \
-  ./
+FROM node:18-alpine As development
 
-# copy source code
-COPY src/ src/
+# Create app directory
+WORKDIR /usr/src/app
 
+# Copy application dependency manifests to the container image.
+# A wildcard is used to ensure copying both package.json AND package-lock.json (when available).
+# Copying this first prevents re-running npm install on every code change.
+COPY --chown=node:node package*.json ./
 
-FROM dev AS build
+# Install app dependencies using the `npm ci` command instead of `npm install`
+RUN npm ci
 
-# install dependencies
-RUN npm install
+# Bundle app source
+COPY --chown=node:node . .
 
-# build from source
+# Use the node user from the image (instead of the root user)
+USER node
+
+###################
+# BUILD FOR PRODUCTION
+###################
+
+FROM node:18-alpine As build
+
+WORKDIR /usr/src/app
+
+COPY --chown=node:node package*.json ./
+
+# In order to run `npm run build` we need access to the Nest CLI which is a dev dependency. In the previous development stage we ran `npm ci` which installed all dependencies, so we can copy over the node_modules directory from the development image
+COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
+
+COPY --chown=node:node . .
+
+# Run the build command which creates the production bundle
 RUN npm run build
 
-# copy migrations
-COPY src/modules/database/migrations/ /app/dist/modules/database/migrations/
-COPY src/config/ /app/dist/config/
+# Set NODE_ENV environment variable
+ENV NODE_ENV production
 
-# prune dev dependencies, keep production dependencies
-RUN npm prune --production
+# Running `npm ci` removes the existing node_modules directory and passing in --only=production ensures that only the production dependencies are installed. This ensures that the node_modules directory is as optimized as possible
+RUN npm ci --only=production && npm cache clean --force
 
+USER node
 
-FROM node:lts-alpine AS prod
-WORKDIR /app
+###################
+# PRODUCTION
+###################
 
-# copy production-relevant configuration files
-COPY package.json ./
+FROM node:18-alpine As production
 
-# copy all dependencies
-COPY --from=build /app/node_modules/ node_modules/
+# Copy the bundled code from the build stage to the production image
+COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 
-# copy compiled source
-COPY --from=build /app/dist dist/
-
-COPY \
-  .env* \
-  .eslintrc.js \
-  .prettierrc \
-  .sequelizerc \
-  nest-cli.json \
-  package.json \
-  tsconfig.build.json \
-  tsconfig.json \
-  ./
-
-RUN npm install sequelize-cli -g
-
+# Start the server using the production build
+CMD [ "node", "dist/main.js" ]
