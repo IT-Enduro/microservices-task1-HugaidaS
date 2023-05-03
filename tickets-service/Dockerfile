@@ -1,60 +1,28 @@
-FROM node:lts-alpine AS dev
-WORKDIR /app
+# Base image
+FROM node:18
 
-# copy configuration files
+# Create app directory
+WORKDIR /usr/src/app
+
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY \
-  .env* \
   .eslintrc.js \
   .prettierrc \
   .sequelizerc \
   nest-cli.json \
-  package.json \
+  package*.json \
   tsconfig.build.json \
   tsconfig.json \
   ./
 
-# copy source code
-COPY src/ src/
-
-
-FROM dev AS build
-
-# install dependencies
+# Install app dependencies
 RUN npm install
 
-# build from source
+# Bundle app source
+COPY . .
+
+# Creates a "dist" folder with the production build
 RUN npm run build
 
-# copy migrations
 COPY src/modules/database/migrations/ /app/dist/modules/database/migrations/
 COPY src/config/ /app/dist/config/
-
-# prune dev dependencies, keep production dependencies
-RUN npm prune --production
-
-
-FROM node:lts-alpine AS prod
-WORKDIR /app
-
-# copy production-relevant configuration files
-COPY package.json ./
-
-# copy all dependencies
-COPY --from=build /app/node_modules/ node_modules/
-
-# copy compiled source
-COPY --from=build /app/dist dist/
-
-COPY \
-  .env* \
-  .eslintrc.js \
-  .prettierrc \
-  .sequelizerc \
-  nest-cli.json \
-  package.json \
-  tsconfig.build.json \
-  tsconfig.json \
-  ./
-
-RUN npm install sequelize-cli -g
-
