@@ -20,7 +20,7 @@ jobs:
       - name: Build tickets-service
         uses: docker/setup-buildx-action@v2
         with:
-          context: ./tickets-service
+          context: ../../tickets-service
           file: Dockerfile
           platforms: linux/amd64,linux/arm64,linux/armhf
           push: false
