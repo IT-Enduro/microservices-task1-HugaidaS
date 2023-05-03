@@ -20,7 +20,7 @@ jobs:
 
       - name: Build tickets-service
         uses: docker/build-push-action@v2
-        -with:
+        with:
           context: ./tickets-service
           file: Dockerfile
           platforms: linux/amd64,linux/arm64,linux/armhf
