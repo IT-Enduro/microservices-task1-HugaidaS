@@ -1,4 +1,3 @@
-# This stage is used as a target in Lotic's global docker-compose at https://github.com/Lotic-ai/lotic-configs/blob/main/docker-compose.yml
 FROM node:lts-alpine AS dev
 WORKDIR /app
 
