@@ -14,12 +14,17 @@ jobs:
       - uses: actions/checkout@v3
 
       - uses: docker/setup-buildx-action@v2
+        with:
+          platform: linux/amd64,linux/arm64
+          push: false
 
-      # TODO build project
-
-      - name: Build images
-        timeout-minutes: 7
-        run: docker compose build
+      - name: Build tickets-service
+        uses: docker/build-push-action@v2
+        -with:
+          context: ./tickets-service
+          file: Dockerfile
+          platforms: linux/amd64,linux/arm64,linux/armhf
+          push: false
 
       - name: Run containers
         timeout-minutes: 5
