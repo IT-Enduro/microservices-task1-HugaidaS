@@ -11,8 +11,6 @@ COPY \
   .sequelizerc \
   nest-cli.json \
   package*.json \
-  tsconfig.build.json \
-  tsconfig.json \
   ./
 
 # Install app dependencies
